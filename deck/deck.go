@@ -2,7 +2,9 @@ package deck
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
+	"time"
 )
 
 type Suit int
@@ -54,7 +56,35 @@ func (c Card) String() string {
 		value = "ACE"
 	}
 
-	return fmt.Sprintf("%d of %s %s", c.value, c.suit, suitToUnicode(c.suit))
+	if value == "11" {
+		value = "Jack"
+	}
+
+	if value == "12" {
+		value = "Queen"
+	}
+
+	if value == "13" {
+		value = "King"
+	}
+
+	return fmt.Sprintf("%s of %s %s", value, c.suit, suitToUnicode(c.suit))
+}
+
+func Shuffle(d Deck) Deck {
+
+	rand.Seed(time.Now().UnixNano())
+
+	for i := 0; i < len(d); i++ {
+
+		r := rand.Intn(i + 1)
+
+		if r != i {
+			d[i], d[r] = d[r], d[i]
+		}
+	}
+
+	return d
 }
 
 func suitToUnicode(s Suit) string {
@@ -93,6 +123,5 @@ func New() Deck {
 		}
 	}
 
-	return d
-
+	return Shuffle(d)
 }
