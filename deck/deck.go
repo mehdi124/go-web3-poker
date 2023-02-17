@@ -1,10 +1,4 @@
-package "deck"
-
-
-import (
-	"fmt"
-)
-
+package deck
 
 type Suit int
 

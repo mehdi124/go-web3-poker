@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	card := deck.NewCard(deck.Spades, 1)
+	card := test.NewCard(deck.Spades, 1)
 	fmt.Println(card)
 
 }
