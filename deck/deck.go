@@ -32,10 +32,9 @@ type Card struct{
 	suit Suit
 }
 
-func 
 
 func NewCard(s Suit,v int) Card {
-	
+
 	if v > 13 {
 		panic("the value of card can not be bigger than 13")
 	}
@@ -48,12 +47,18 @@ func NewCard(s Suit,v int) Card {
 
 
 func (c Card) String() string{
+
+	value := strconv.Itoa(c.value)
+	if c.value == 1{
+		value = "ACE"
+	}
+
 	return fmt.Sprintf("%d of %s %s",c.value,c.suit,suitToUnicode(c.suit))
 }
 
 
 func suitToUnicode(s Suit) string{
-	
+
 	sqitch s{
 	case Spades:
 		return "♠"
@@ -69,9 +74,26 @@ func suitToUnicode(s Suit) string{
 
 }
 
+type Deck [52]Card
 
-func main(){
 
-	
+func New() Deck {
+
+	nSuits := 4
+	nCards := 13
+
+	d := [52]Card{}
+
+	x := 0
+	for i := 0;i < nSuits;i++{
+
+		for j := 0;j<nCards;j++{
+
+			d[x] = NewCard(Suit(i),j+1)
+			x++
+		}
+	}
+
+	return d
 
 }
