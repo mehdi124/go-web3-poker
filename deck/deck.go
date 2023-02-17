@@ -1,5 +1,10 @@
 package deck
 
+import (
+	"fmt"
+	"strconv"
+)
+
 type Suit int
 
 func (s Suit) String() string {
@@ -19,47 +24,42 @@ func (s Suit) String() string {
 }
 
 const (
-
 	Spades Suit = iota
 	Harts
 	Diamonds
 	Clubs
 )
 
-
-type Card struct{
+type Card struct {
 	value int
-	suit Suit
+	suit  Suit
 }
 
-
-func NewCard(s Suit,v int) Card {
+func NewCard(s Suit, v int) Card {
 
 	if v > 13 {
 		panic("the value of card can not be bigger than 13")
 	}
 
 	return Card{
-		suit : s,
-		value : v,
+		suit:  s,
+		value: v,
 	}
 }
 
-
-func (c Card) String() string{
+func (c Card) String() string {
 
 	value := strconv.Itoa(c.value)
-	if c.value == 1{
+	if value == "1" {
 		value = "ACE"
 	}
 
-	return fmt.Sprintf("%d of %s %s",c.value,c.suit,suitToUnicode(c.suit))
+	return fmt.Sprintf("%d of %s %s", c.value, c.suit, suitToUnicode(c.suit))
 }
 
+func suitToUnicode(s Suit) string {
 
-func suitToUnicode(s Suit) string{
-
-	sqitch s{
+	switch s {
 	case Spades:
 		return "♠"
 	case Harts:
@@ -76,7 +76,6 @@ func suitToUnicode(s Suit) string{
 
 type Deck [52]Card
 
-
 func New() Deck {
 
 	nSuits := 4
@@ -85,11 +84,11 @@ func New() Deck {
 	d := [52]Card{}
 
 	x := 0
-	for i := 0;i < nSuits;i++{
+	for i := 0; i < nSuits; i++ {
 
-		for j := 0;j<nCards;j++{
+		for j := 0; j < nCards; j++ {
 
-			d[x] = NewCard(Suit(i),j+1)
+			d[x] = NewCard(Suit(i), j+1)
 			x++
 		}
 	}
