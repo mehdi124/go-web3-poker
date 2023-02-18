@@ -18,6 +18,7 @@ func (p *Peer) Send(b []byte) error {
 }
 
 type ServerConfig struct {
+	Version    string
 	ListenAddr string
 }
 
@@ -33,16 +34,18 @@ type Server struct {
 	peers    map[net.Addr]*Peer
 	ServerConfig
 	addPeer chan *Peer
+	delPeer chan *Peer
 	msgChan chan *Message
 }
 
 func NewServer(cfg ServerConfig) *Server {
 
 	return &Server{
-		handler:      *NewHandler(),
+		handler:      &DefaultHandler{},
 		ServerConfig: cfg,
 		peers:        make(map[net.Addr]*Peer),
 		addPeer:      make(chan *Peer),
+		delPeer:      make(chan *Peer),
 		msgChan:      make(chan *Message),
 	}
 }
@@ -55,26 +58,43 @@ func (s *Server) Start() {
 		panic(err)
 	}
 
-	fmt.Printf("game server is running on port %s\n", s.ServerConfig.ListenAddr)
+	fmt.Printf("game server is running on port %s\n", s.ListenAddr)
 	s.acceptLoop()
 }
 
-func (s *Server) handleConn(conn net.Conn) {
+func (s *Server) handleConn(p *Peer) {
 
 	buf := make([]byte, 1024)
 
 	for {
-		n, err := conn.Read(buf)
+		n, err := p.conn.Read(buf)
 		if err != nil {
 			break
 		}
 
 		s.msgChan <- &Message{
-			From:    conn.RemoteAddr(),
+			From:    p.conn.RemoteAddr(),
 			Payload: bytes.NewReader(buf[:n]),
 		}
 	}
 
+	s.delPeer <- p
+
+}
+
+func (s *Server) Connect(addr string) error {
+
+	conn, err := net.Dial("tcp", addr)
+	if err != nil {
+		return err
+	}
+
+	peer := &Peer{
+		conn: conn,
+	}
+
+	s.addPeer <- peer
+	return peer.Send([]byte(s.Version))
 }
 
 func (s *Server) acceptLoop() {
@@ -92,8 +112,8 @@ func (s *Server) acceptLoop() {
 
 		s.addPeer <- peer
 
-		peer.Send([]byte("mehdi124 v0.1-alpha"))
-		go s.handleConn(conn)
+		peer.Send([]byte(s.Version))
+		go s.handleConn(peer)
 	}
 
 }
@@ -113,6 +133,9 @@ func (s *Server) listen() error {
 func (s *Server) loop() {
 	for {
 		select {
+		case peer := <-s.delPeer:
+			fmt.Printf("player disconnected %s\n", peer.conn.RemoteAddr())
+			delete(s.peers, peer.conn.RemoteAddr())
 		case peer := <-s.addPeer:
 			fmt.Printf("new player connected %s\n", peer.conn.RemoteAddr())
 			s.peers[peer.conn.RemoteAddr()] = peer

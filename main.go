@@ -2,18 +2,37 @@ package main
 
 import (
 	//"github.com/mehdi124/go-web3-poker/deck"
+	"fmt"
+	"time"
+
+	"github.com/mehdi124/go-web3-poker/deck"
 	"github.com/mehdi124/go-web3-poker/p2p"
 )
 
 func main() {
 
 	cfg := &p2p.ServerConfig{
+		Version:    "mehdi124_V0.1-alpha",
 		ListenAddr: ":3000",
 	}
 
 	server := p2p.NewServer(*cfg)
-	server.Start()
+	go server.Start()
 
-	//	card := deck.New()
+	time.Sleep(2 * time.Second)
+
+	remoteCfg := &p2p.ServerConfig{
+		Version:    "mehdi124_V0.1-alpha",
+		ListenAddr: ":4000",
+	}
+
+	remoteServer := p2p.NewServer(*remoteCfg)
+	if err := remoteServer.Connect(":3000"); err != nil {
+		panic(err)
+	}
+
+	go remoteServer.Start()
+
+	fmt.Println(deck.New())
 
 }
