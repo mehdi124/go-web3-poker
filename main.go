@@ -12,8 +12,9 @@ import (
 func main() {
 
 	cfg := &p2p.ServerConfig{
-		Version:    "mehdi124_V0.1-alpha",
-		ListenAddr: ":3000",
+		Version:     "mehdi124_V0.1-alpha",
+		ListenAddr:  ":3000",
+		GameVariant: p2p.TexasHoldem,
 	}
 
 	server := p2p.NewServer(*cfg)
@@ -22,8 +23,9 @@ func main() {
 	time.Sleep(2 * time.Second)
 
 	remoteCfg := &p2p.ServerConfig{
-		Version:    "mehdi124_V0.1-alpha",
-		ListenAddr: ":4000",
+		Version:     "mehdi124_V0.1-alpha",
+		ListenAddr:  ":4000",
+		GameVariant: p2p.TexasHoldem,
 	}
 
 	remoteServer := p2p.NewServer(*remoteCfg)
