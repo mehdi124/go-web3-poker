@@ -2,10 +2,10 @@ package main
 
 import (
 	//"github.com/mehdi124/go-web3-poker/deck"
-	"fmt"
+
+	"log"
 	"time"
 
-	"github.com/mehdi124/go-web3-poker/deck"
 	"github.com/mehdi124/go-web3-poker/p2p"
 )
 
@@ -29,12 +29,14 @@ func main() {
 	}
 
 	remoteServer := p2p.NewServer(*remoteCfg)
-	if err := remoteServer.Connect(":3000"); err != nil {
-		panic(err)
-	}
 
 	go remoteServer.Start()
 
-	fmt.Println(deck.New())
+	if err := remoteServer.Connect(":3000"); err != nil {
+		log.Fatal(err)
+	}
 
+	//	fmt.Println(deck.New())
+
+	select {}
 }
