@@ -36,6 +36,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := server.Connect(":4000"); err != nil {
+		log.Fatal(err)
+	}
 	//	fmt.Println(deck.New())
 
 	select {}
